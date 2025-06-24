@@ -4,4 +4,3 @@
 [Paper Download](https://www-labs.iro.umontreal.ca/~bmpix/one_shot/gwn.pdf)
 
 # Instructions to run the code (coming soon)
-
