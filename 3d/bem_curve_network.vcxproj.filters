@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\region_splittnig">
+      <UniqueIdentifier>{c4fb23b8-8555-4a83-bc12-2480d39234e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\region_splitting">
+      <UniqueIdentifier>{59d22f7d-d235-4f4d-a53d-98fd2c0b09b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\rays">
+      <UniqueIdentifier>{9099ef54-50f1-4453-95ad-e2369e152bb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\rays">
+      <UniqueIdentifier>{7f4348e9-aec8-4aed-882b-e8c46fc4d822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\curve_net">
+      <UniqueIdentifier>{637b6f42-c7dc-4dcd-9dda-e2df057235d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\curve_net">
+      <UniqueIdentifier>{d701fd47-102b-4d7a-8a58-58ad37885b42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\compare">
+      <UniqueIdentifier>{29e20018-269e-4e42-b65d-87a4e963def0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\compare">
+      <UniqueIdentifier>{3ceac79d-5374-4025-89ad-4ec30991feab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\external">
+      <UniqueIdentifier>{3c2ea5bb-2e46-4f3a-b56a-6ac3c70e8bd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\external">
+      <UniqueIdentifier>{5dda71cc-bb12-492d-85db-4d4c4293a04f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bem_solver.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="boundary_processing.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="coons.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="curve_net.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="curve_net_wn.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="math_util.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="open_curve.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="surface.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="uv_util.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="spherical.cpp">
+      <Filter>Source Files\region_splitting</Filter>
+    </ClCompile>
+    <ClCompile Include="curve_net_parser.cpp">
+      <Filter>Source Files\curve_net</Filter>
+    </ClCompile>
+    <ClCompile Include="region_splitting.cpp">
+      <Filter>Source Files\region_splitting</Filter>
+    </ClCompile>
+    <ClCompile Include="parametric.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="half_space.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files\curve_net</Filter>
+    </ClCompile>
+    <ClCompile Include="gwn.cpp">
+      <Filter>Source Files\compare</Filter>
+    </ClCompile>
+    <ClCompile Include="octreeSDF.cpp">
+      <Filter>Source Files\external</Filter>
+    </ClCompile>
+    <ClCompile Include="patch.cpp">
+      <Filter>Source Files\curve_net</Filter>
+    </ClCompile>
+    <ClCompile Include="bezier.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+    <ClCompile Include="adaptive.cpp">
+      <Filter>Source Files\compare</Filter>
+    </ClCompile>
+    <ClCompile Include="subdivision_surface.cpp">
+      <Filter>Source Files\rays</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="region_splitting.h">
+      <Filter>Header Files\region_splittnig</Filter>
+    </ClInclude>
+    <ClInclude Include="bem_solver.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="boundary_processing.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="coons.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="curve_net.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="curve_net_wn.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="math_util.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="open_curve.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="surface.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="uv_util.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="spherical.h">
+      <Filter>Header Files\region_splittnig</Filter>
+    </ClInclude>
+    <ClInclude Include="curve_net_parser.h">
+      <Filter>Header Files\curve_net</Filter>
+    </ClInclude>
+    <ClInclude Include="parametric.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="half_space.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="intersections.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="patch.h">
+      <Filter>Header Files\curve_net</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files\curve_net</Filter>
+    </ClInclude>
+    <ClInclude Include="result.h">
+      <Filter>Header Files\curve_net</Filter>
+    </ClInclude>
+    <ClInclude Include="gwn.h">
+      <Filter>Header Files\compare</Filter>
+    </ClInclude>
+    <ClInclude Include="octreeSDF.h">
+      <Filter>Header Files\external</Filter>
+    </ClInclude>
+    <ClInclude Include="arr_print.h">
+      <Filter>Header Files\external</Filter>
+    </ClInclude>
+    <ClInclude Include="bezier.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+    <ClInclude Include="adaptive.h">
+      <Filter>Header Files\compare</Filter>
+    </ClInclude>
+    <ClInclude Include="subdivision_surface.h">
+      <Filter>Header Files\rays</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
