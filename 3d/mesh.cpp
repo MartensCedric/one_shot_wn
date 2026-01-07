@@ -1,11 +1,13 @@
 #include "mesh.h"
+#include <igl/Hit.h>
+#include <igl/ray_mesh_intersect.h>
+#include <memory>
 #include "igl/boundary_loop.h"
 #include "igl/ray_triangle_intersect.h"
 #include "igl/ray_mesh_intersect.h"
 #include <Eigen/Dense>
 #include <iostream>
 #include <fstream> 
-#include "octreeSDF.h"
 
 std::vector<patch_t> extract_mesh_boundary(const Eigen::MatrixXd& vertices, const Eigen::MatrixXi& faces)
 {
@@ -221,8 +223,6 @@ struct all_intersections_with_normals_result find_all_intersections_mesh(const E
 			Eigen::Vector3d l1 = vertices.row(face(1)) - vertices.row(face(0));
 			Eigen::Vector3d l2 = vertices.row(face(2)) - vertices.row(face(0));
 			Eigen::Vector3d normal = l1.cross(l2);
-			//normal.normalize();
-			//double normal_dot = std::abs(normal.dot(dir));
 
 			//if (normal_dot < 0.01)
 			//	continue;
@@ -237,82 +237,6 @@ struct all_intersections_with_normals_result find_all_intersections_mesh(const E
 			}
 		}
 
-	/*	if (parallel)
-		{
-			result.valid_ray = false;
-			return result;
-		}*/
-	}
-
-	std::vector<igl::Hit> hits;
-
-	//if (igl::ray_mesh_intersect(point, dir, vertices, faces, hits)) {
-
-	//	// Iterate over the hits
-	//	for (const auto& hit : hits) {/*
-	//		std::cout << "Intersection at face: " << hit.id << std::endl;
-	//		std::cout << "Barycentric coordinates: " << hit.u << ", " << hit.v << std::endl;
-	//		std::cout << "Distance along the ray: " << hit.t << std::endl;*/
-
-	//		Eigen::Vector3i face = faces.row(hit.id);
-	//		Eigen::Vector3d l1 = vertices.row(face(1)) - vertices.row(face(0));
-	//		Eigen::Vector3d l2 = vertices.row(face(2)) - vertices.row(face(0));
-	//		Eigen::Vector3d normal = l1.cross(l2);
-	//		normal.normalize();
-	//		double normal_dot = std::abs(normal.dot(dir));
-
-	//		if (normal_dot < 0.01)
-	//			continue;
-
-	//		if (normal.dot(dir) > 0.0)
-	//		{
-	//			result.all_intersections.emplace_back(hit.t, 1);
-	//		}
-	//		else
-	//		{
-	//			result.all_intersections.emplace_back(hit.t, -1);
-	//		}
-	//	}
-	//}
-	//
-	std::sort(result.all_intersections.begin(), result.all_intersections.end(), [=](const std::pair<double, int>& p1, const std::pair<double, int>& p2) { return p1.first < p2.first; });
-	return result;
-}
-
-struct all_intersections_with_normals_result find_all_mesh_tree_intersections(const SDF* mesh_tree, std::array<double, 3>& query, std::array<double, 3>& dir)
-{
-	all_intersections_with_normals_result result;
-	result.valid_ray = true;
-
-	std::vector<std::pair<double, int>> intersections = mesh_tree->query_triangle_index(query, dir);
-
-	for (int i = 0; i < intersections.size(); i++)
-	{
-		double t = intersections[i].first;
-		int face_index = intersections[i].second;
-		std::array<double, 3> v0 = mesh_tree->V[mesh_tree->F[face_index][0]];
-		std::array<double, 3> v1 = mesh_tree->V[mesh_tree->F[face_index][1]];
-		std::array<double, 3> v2 = mesh_tree->V[mesh_tree->F[face_index][2]];
-
-		Eigen::Vector3d ev0 = Eigen::Vector3d(v0[0], v0[1], v0[2]);
-		Eigen::Vector3d ev1 = Eigen::Vector3d(v1[0], v1[1], v1[2]);
-		Eigen::Vector3d ev2 = Eigen::Vector3d(v2[0], v2[1], v2[2]);
-
-		Eigen::Vector3d l1 = ev1 - ev0;
-		Eigen::Vector3d l2 = ev2 - ev0;
-		Eigen::Vector3d normal = l1.cross(l2);
-
-		Eigen::Vector3d dir = Eigen::Vector3d(dir[0], dir[1], dir[2]);
-
-		if (normal.dot(dir) > 0.0)
-		{
-			result.all_intersections.emplace_back(t, 1);
-		}
-		else
-		{
-			result.all_intersections.emplace_back(t, -1);
-		}
-		
 	}
 
 	std::sort(result.all_intersections.begin(), result.all_intersections.end(), [=](const std::pair<double, int>& p1, const std::pair<double, int>& p2) { return p1.first < p2.first; });

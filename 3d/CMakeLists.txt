@@ -48,4 +48,5 @@ set(LIBIGL_WITH_PREDICATES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(${LIBIGL_DIR} ${CMAKE_BINARY_DIR}/_deps/libigl)
 
-target_link_libraries(${TARGET_NAME} PRIVATE igl::core)
+target_link_libraries(${TARGET_NAME} PRIVATE igl::core gsl gslcblas m)
+

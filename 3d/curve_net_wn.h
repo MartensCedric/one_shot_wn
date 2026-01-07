@@ -18,7 +18,6 @@
 #include "mesh.h"
 
 #include "result.h"
-#include "octreeSDF.h"
 
 struct precomputed_curve_data {
 	std::vector<BoundaryParametrization*> int_params;

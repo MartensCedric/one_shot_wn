@@ -151,7 +151,6 @@ std::vector<double> winding_numbers_along_ray(const std::vector<std::pair<double
 	//Eigen::IOFormat numpy_fmt(Eigen::FullPrecision, 0, ", ", ",\n", "[", "]", "[", "]");
 	//std::cout << dir << std::endl;
 	for (int i = 0; i < ray.size(); i++)
-	//for (int i = 4; i < 5; i++)
 	{
 		int query_index = ray[i];
 		const region_weighted_rays_info& region_info = region_infos[i];
@@ -283,8 +282,6 @@ winding_number_results winding_number_mixed(const std::vector<patch_t>& patches,
 #pragma omp parallel for num_threads(max_threads)
 	for (int ray_index = 0; ray_index < ray_shots.size(); ray_index++)
 	{
-		if (one_shot_all_points)
-			break;
 		int first_query_point_idx = ray_shots[ray_index][0];
 		int second_query_point_idx = ray_shots[ray_index][1];
 
