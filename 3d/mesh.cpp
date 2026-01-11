@@ -1,7 +1,7 @@
-#include "mesh.h"
+#include <memory>
+
 #include <igl/Hit.h>
 #include <igl/ray_mesh_intersect.h>
-#include <memory>
 #include "igl/boundary_loop.h"
 #include "igl/ray_triangle_intersect.h"
 #include "igl/ray_mesh_intersect.h"
@@ -9,9 +9,11 @@
 #include <iostream>
 #include <fstream> 
 
+#include "mesh.h"
+
 std::vector<patch_t> extract_mesh_boundary(const Eigen::MatrixXd& vertices, const Eigen::MatrixXi& faces)
 {
-	std::vector<std::vector<Eigen::Index>> loop_vertices;
+	std::vector<std::vector<int>> loop_vertices;
 	igl::boundary_loop(faces, loop_vertices);
 
 	std::vector<patch_t> patches;

@@ -1,6 +1,11 @@
 #pragma once
 
 #include <Eigen/Dense>
+#include <chrono>
+#include <string>
+#include <vector>
+#include <fstream>
+
 #include <igl/triangulated_grid.h>
 #include <igl/cotmatrix.h>
 #include <igl/boundary_loop.h>
@@ -9,9 +14,6 @@
 #include <igl/copyleft/cgal/delaunay_triangulation.h>
 #include <igl/writeOBJ.h>
 #include <igl/winding_number.h>
-#include <chrono>
-#include <string>
-#include <vector>
 
 #include "curve_net_parser.h"
 #include "math_util.h"

@@ -185,18 +185,3 @@ Eigen::MatrixXd slice_XZ(int row_count);
 std::vector<std::vector<int>> rays_from_slice(const Eigen::MatrixXd&);
 
 void triangulate_unit_square(Eigen::MatrixXd& V, Eigen::MatrixXi& F, int N);
-
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Arrangement_on_surface_2.h>
-#include <CGAL/Arr_geodesic_arc_on_sphere_traits_2.h>
-#include <CGAL/Arr_spherical_topology_traits_2.h>
-
-template<typename T>
-Eigen::Vector3d cgal_point_to_eigen(const T& cgal_p)
-{
-	double idx = CGAL::to_double(cgal_p.dx().approx());
-	double idy = CGAL::to_double(cgal_p.dy().approx());
-	double idz = CGAL::to_double(cgal_p.dz().approx());
-	Eigen::Vector3d point = Eigen::Vector3d(idx, idy, idz);
-	return point;
-}

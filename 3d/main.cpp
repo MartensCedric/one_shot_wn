@@ -1,4 +1,12 @@
 #include <iostream>
+#include <fstream>
+#include <random>
+#include <numeric>
+#include <iomanip>
+#include <chrono>
+#include <list>
+#include <gsl/gsl_multiroots.h>
+
 #include "math_util.h"
 #include "uv_util.h"
 #include "bem_solver.h"
@@ -8,30 +16,15 @@
 #include "coons.h"
 #include "open_curve.h"
 #include "surface.h"
-#include <gsl/gsl_multiroots.h>
-#include <random>
-#include <iostream>
-#include <fstream>
-#include <numeric>
 #include "uv_util.h"
 #include "curve_net_parser.h"
 #include "spherical.h"
-#include <iomanip>
-#include <chrono>
 #include "spherical.h"
 #include "region_splitting.h"
 #include "mesh.h"
 #include "gwn.h"
-
 #include "adaptive.h"
 
-#include <list>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Arrangement_on_surface_2.h>
-#include <CGAL/Arr_geodesic_arc_on_sphere_traits_2.h>
-#include <CGAL/Arr_spherical_topology_traits_2.h>
-#include "arr_print.h"
-#include <chrono>
 #include "bezier.h"
 
 

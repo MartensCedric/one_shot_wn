@@ -1,8 +1,11 @@
 
 #include <Eigen/Dense>
-#include "gwn.h"
 #include <limits>
+#include <iomanip>
+
 #include <igl/fast_winding_number.h>
+
+#include "gwn.h"
 
 
 space_curve_t test_boundary1()

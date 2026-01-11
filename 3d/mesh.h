@@ -2,8 +2,10 @@
 
 #include <vector>
 #include <string>
-#include <Eigen/Dense>
 #include <array>
+
+#include <Eigen/Dense>
+
 #include "patch.h"
 #include "intersections.h"
 

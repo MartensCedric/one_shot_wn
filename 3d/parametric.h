@@ -1,13 +1,16 @@
 #pragma once
 
+#include <iostream>
+#include <fstream>
+#include <functional>
+#include <random>
+
+#include <Eigen/Dense>
+#include <gsl/gsl_multiroots.h>
+
 #include "intersections.h"
 #include "math_util.h"
 #include "patch.h"
-#include <iostream>
-#include <functional>
-#include <Eigen/Dense>
-#include <gsl/gsl_multiroots.h>
-#include <random>
 
 typedef std::function<Eigen::Vector3d(Eigen::Vector2d)> implicit_func_t;
 

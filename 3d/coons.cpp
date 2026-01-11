@@ -1,12 +1,14 @@
-#include "coons.h"
-#include "math_util.h"
-#include "mesh.h"
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <fstream>
+
 #include <Eigen/Dense>
 #include <igl/boundary_loop.h>
+
+#include "coons.h"
+#include "math_util.h"
+#include "mesh.h"
 
 coons_patch build_coons_patch(curve_3d_param_func_t c0, curve_3d_param_func_t c1, curve_3d_param_func_t d0, curve_3d_param_func_t d1)
 {
@@ -82,71 +84,6 @@ Eigen::Matrix<double, 3, 2> coons_jacobian(double s, double t, const coons_patch
 	jac.col(1) = df_dt;
 	return jac;
 }
-//int f_coon(const gsl_vector* x, void* p, gsl_vector* f)
-//{
-//	coon_solver_params* params = (coon_solver_params*)p;
-//	Eigen::Vector3d point = params->point;
-//	Eigen::Vector3d dir = params->dir;
-//	coons_patch patch = params->patch;
-//	const double u = gsl_vector_get(x, 0);
-//	const double v = gsl_vector_get(x, 1);
-//	const double t = gsl_vector_get(x, 2);
-//
-//	//if (std::isnan(u) || std::isnan(v) || std::isnan(t))
-//	//{
-//	//	double inf = std::numeric_limits<double>::infinity();
-//	//	gsl_vector_set(f, 0, inf);
-//	//	gsl_vector_set(f, 1, inf);
-//	//	gsl_vector_set(f, 2, inf);
-//	//	return GSL_SUCCESS;
-//	//}
-//
-//	Eigen::Vector3d uvt = Eigen::Vector3d(u, v, t);
-//	Eigen::Vector3d output = patch.func(Eigen::Vector2d(u, v)) - (point + dir * t);
-//
-//	//std::cout << "pts = [";
-//	//for (int i = 0; i < 600; i++)
-//	//{
-//	//	Eigen::Vector3d p = patch.func(Eigen::Vector2d(static_cast<double>(rand()) / RAND_MAX, static_cast<double>(rand()) / RAND_MAX));
-//	//	std::cout << p.x() << ", " << p.y() << ", " << p.z() << "; ";
-//	//}
-//
-//	//std::cout << "];" << std::endl;
-//	//std::cout << interpolate_curve(0.8, patch.c0_v) << std::endl << std::endl;
-//	//std::cout << patch.func(Eigen::Vector2d(0.2, 0.0)) << std::endl << std::endl;
-//	//std::cout << patch.func(Eigen::Vector2d(0.8, 0.0)) << std::endl << std::endl;;
-//	//std::cout << patch.func(Eigen::Vector2d(0.0, 0.8)) << std::endl << std::endl;;
-//	//std::cout << patch.func(Eigen::Vector2d(0.8, 1)) << std::endl << std::endl;;
-//
-//
-//	//Eigen::Vector3d p0 = patch.func(Eigen::Vector2d(u, v));
-//	Eigen::Matrix<double, 3, 2> fd_jac;
-//
-//	double eps = 1e-8;
-//
-//	//Eigen::Vector3d fu1 = patch.func(Eigen::Vector2d(u + eps, v));
-//	//Eigen::Vector3d fu2 = patch.func(Eigen::Vector2d(u - eps, v));
-//	//Eigen::Vector3d fu = fu2 - fu1;
-//	//Eigen::Vector3d df_du = (fu) / (2 * eps);
-//
-//
-//	/*Eigen::Vector3d f_u = (patch.func(Eigen::Vector2d(u + eps, v)) - patch.func(Eigen::Vector2d(u - eps, v))) / (2. * eps);
-//	Eigen::Vector3d f_v = (patch.func(Eigen::Vector2d(u, v + eps)) - patch.func(Eigen::Vector2d(u, v - eps))) / (2. * eps);
-//	fd_jac.col(0) = f_u;
-//	fd_jac.col(1) = f_v;
-//	std::cout << fd_jac << std::endl << std::endl;*/
-//
-//	//Eigen::Matrix<double, 3, 2> cedric_jac = coon_jacobian(u, v, patch);
-//
-//	//std::cout << cedric_jac - fd_jac << std::endl << std::endl;
-//
-//	/*std::cout << u << " " << v << " " << t << " => " << output(0) << " " << output(1) << " " << output(2) << std::endl << std::endl;*/
-//
-//	gsl_vector_set(f, 0, output(0));
-//	gsl_vector_set(f, 1, output(1));
-//	gsl_vector_set(f, 2, output(2));
-//	return GSL_SUCCESS;
-//}
 
 
 typedef std::function<Eigen::Vector3d(double)> curve_3d_param_func_t;
@@ -242,10 +179,10 @@ void load_coons_patches_from_objs(const std::string& folder_name, const std::str
 		d0 = coons_funcs[2];
 		c1 = coons_funcs[3];
 
-		std::vector<std::vector<Eigen::Index>> boundary_loops;
+		std::vector<std::vector<int>> boundary_loops;
 		igl::boundary_loop(F, boundary_loops);
 		assert(boundary_loops.size() > 0);
-		std::vector<Eigen::Index> boundary = boundary_loops[0];
+		std::vector<int> boundary = boundary_loops[0];
 
 		std::vector<Eigen::Vector3d> c0_v(c0.size());
 		std::vector<Eigen::Vector3d> c1_v(c1.size());

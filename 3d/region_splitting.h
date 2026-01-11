@@ -66,7 +66,6 @@ struct weighted_rays_info
 typedef std::pair<Eigen::Vector3d, Eigen::Vector3d> segment_t;
 region_weighted_rays_info get_weighted_rays(const closed_curve_t& curve, const Eigen::Vector3d& point);
 region_weighted_rays_info get_weighted_rays_with_config(const closed_curve_t& curve, const Eigen::Vector3d& point, const surface_config& config);
-region_weighted_rays_info decompose_regions_fast(const std::vector <space_curve_t>& boundaries, const Eigen::Vector3d& point);
 
 region_splitting_info compute_regions_for_curve(const closed_spherical_curve_t& spherical_curve);
 closed_spherical_curve_t project_to_sphere(const closed_curve_t& curve, const Eigen::Vector3d& point);

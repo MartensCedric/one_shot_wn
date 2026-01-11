@@ -1,4 +1,6 @@
 #include "bezier.h"
+#include <fstream>
+
 std::function<Eigen::Vector3d(double)> create_cubic_bezier_func(const Eigen::MatrixXd& control_points)
 {
 	std::function<Eigen::Vector3d(double)> bezier_func = [=](double t) {
