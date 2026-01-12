@@ -37,16 +37,17 @@ if(NOT EXISTS "${LIBIGL_DIR}/CMakeLists.txt")
   )
 endif()
 
-set(LIBIGL_USE_STATIC_LIBRARY ON CACHE BOOL "" FORCE)
 set(LIBIGL_PREDICATES ON CACHE BOOL "" FORCE)
 set(LIBIGL_COPYLEFT_CGAL ON CACHE BOOL "" FORCE)
 
 
+set(LIBIGL_USE_STATIC_LIBRARY OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(${LIBIGL_DIR} ${CMAKE_BINARY_DIR}/_deps/libigl)
-target_compile_definitions(${TARGET_NAME} PRIVATE IGL_STATIC_LIBRARY)
+
 target_link_libraries(${TARGET_NAME} PRIVATE
   igl::core
-  igl::predicates
+  igl_predicates
   igl_copyleft::cgal
   gsl gslcblas m
 )
