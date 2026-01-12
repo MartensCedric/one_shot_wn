@@ -733,7 +733,7 @@ void write_gwn_to_file(const winding_number_results& wn_res, const curvenet_inpu
 	const std::vector<double>& gwn = wn_res.gwn;
 
 	std::string input_name = input.config.is_override_output_name ? input.config.override_output_name : input.input_name;
-	std::string filename = "outputs/" + input_name + ".m";
+	std::string filename = input_name + ".m";
 	std::ofstream chi_output(filename);
 	chi_output << "chis = [";
 	for (int j = 0; j < gwn.size(); j++)

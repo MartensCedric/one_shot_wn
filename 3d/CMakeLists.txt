@@ -26,6 +26,17 @@ else()
   message(WARNING "OpenMP not found. Building without OpenMP.")
 endif()
 
+include(FetchContent)
+
+FetchContent_Declare(
+  cxxopts
+  GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
+  GIT_TAG v3.2.0
+)
+
+FetchContent_MakeAvailable(cxxopts)
+
+
 # Expecting: <repo_root>/extern/libigl
 set(LIBIGL_DIR "${CMAKE_SOURCE_DIR}/extern/libigl")
 
@@ -50,4 +61,5 @@ target_link_libraries(${TARGET_NAME} PRIVATE
   igl_predicates
   igl_copyleft::cgal
   gsl gslcblas m
+  cxxopts
 )

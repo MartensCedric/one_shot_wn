@@ -39,9 +39,11 @@ struct surface_config {
 struct curvenet_input {
 	std::string input_name;
 	std::string patches_name;
+	std::string query_point_file;
 	std::vector<int> dimensions;
 	std::vector<int> patches_to_remove;
 	struct surface_config config;
+	bool run_fractional_only = false;
 	std::vector<std::vector<int>> predefined_mesh_boundary;
 };
 
