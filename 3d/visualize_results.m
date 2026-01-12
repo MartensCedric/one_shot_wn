@@ -1,9 +1,13 @@
+setenv("GNUTERM", "dumb");
+set(0, "defaultfigurevisible", "off"); 
+figure("visible","off");
+
 run(strcat('../build/3d/', name, '.m'));
 slice = reshape(flip(chis), res);
 fig = imagesc(slice);
 hold on
 
-caxis([-1, 1]); 
+caxis([-1, 1]);
 cb = colorbar;
 axis equal
 axis off

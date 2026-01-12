@@ -529,21 +529,7 @@ winding_number_results winding_number_mixed(const std::vector<patch_t>& patches,
 		int chi = 0;
 		int query_point_index = query_point_and_patch_leftovers[leftover_index].first;
 		int patch_index = query_point_and_patch_leftovers[leftover_index].second;
-
-
-		/*space_curve_t curve = closed_patches[patch_index];
-		int K = std::ceil(curve.rows() * 0.1);
-		for(int k = 0; k < K; k++)
-		{
-			int largest_index = largest_segment(project_to_sphere(curve, query_points.row(query_point_index)));
-			double t_curve1 = parameter_t_at_index(curve, largest_index);
-			double t_curve2 = parameter_t_at_index(curve, (largest_index + 1) % curve.rows());
-
-			double new_t = (t_curve1 + t_curve2) / 2.0;
-			Eigen::Vector3d new_point = new_point_from_t_triangle_uv(config.parametric_func, new_t);
-
-		}*/
-
+		
 		region_weighted_rays_info weighted_rays = get_weighted_rays(closed_patches[patch_index], query_points.row(query_point_index));
 		if (weighted_rays.polygonal_regions.size() == 0)
 			continue;

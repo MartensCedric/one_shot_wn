@@ -33,6 +33,7 @@ struct surface_config {
 	bool is_override_output_name = false;
 	std::vector<space_curve_t> boundaries;
 	bool perform_self_intersections = true;
+	bool run_fractional_only = false;
 	std::function<bool(Eigen::Vector2d)> is_in_parametric_domain = [](Eigen::Vector2d uv) { return uv(0) >= 0 && uv(0) <= 1 && uv(1) >= 0 && uv(1) <= 1; };
 };
 
@@ -43,7 +44,6 @@ struct curvenet_input {
 	std::vector<int> dimensions;
 	std::vector<int> patches_to_remove;
 	struct surface_config config;
-	bool run_fractional_only = false;
 	std::vector<std::vector<int>> predefined_mesh_boundary;
 };
 
