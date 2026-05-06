@@ -1,1 +1,12 @@
-build/
+build*/
+build_*/
+*.ppm
+*.png
+*.m
+a.out
+.cache/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

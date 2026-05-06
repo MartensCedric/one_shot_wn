@@ -1,0 +1,5 @@
+add_executable(winding_field_plot winding_field_plot.cpp)
+target_link_libraries(winding_field_plot PRIVATE wn2d)
+
+add_executable(wn2d_benchmark benchmark.cpp)
+target_link_libraries(wn2d_benchmark PRIVATE wn2d)
