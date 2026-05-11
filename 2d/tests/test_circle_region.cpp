@@ -48,7 +48,7 @@ TEST_CASE("Adjacent arcs differ in chi by exactly 1", "[circle_region]") {
     Eigen::Vector2d p(1.0, 0.5);
     auto info = compute_circle_regions(c, p);
     REQUIRE(info.arcs.size() == 2);
-    int diff = std::abs(info.arcs[0].winding_number - info.arcs[1].winding_number);
+    int diff = std::abs(info.arcs[0].chi - info.arcs[1].chi);
     REQUIRE(diff == 1);
 }
 
@@ -65,7 +65,7 @@ TEST_CASE("Straight horizontal line from (0,1): fractions 0.25 and 0.75", "[circ
     double large_f = std::max(info.arcs[0].arc_fraction, info.arcs[1].arc_fraction);
     REQUIRE_THAT(small_f, WithinAbs(0.25, 1e-6));
     REQUIRE_THAT(large_f, WithinAbs(0.75, 1e-6));
-    int diff = std::abs(info.arcs[0].winding_number - info.arcs[1].winding_number);
+    int diff = std::abs(info.arcs[0].chi - info.arcs[1].chi);
     REQUIRE(diff == 1);
 }
 
@@ -88,6 +88,6 @@ TEST_CASE("winding_number via arcs matches chi formula: chi_outer + inner_frac",
     auto info = compute_circle_regions(c, p);
     double wn = 0.0;
     for (auto& a : info.arcs)
-        wn += a.arc_fraction * static_cast<double>(a.winding_number);
+        wn += a.arc_fraction * static_cast<double>(a.chi);
     REQUIRE_THAT(wn, WithinAbs(0.25, 1e-6));
 }

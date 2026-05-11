@@ -15,16 +15,13 @@ inline double norm_angle(double a) {
     return a;
 }
 
-// Fractional winding number contribution of a single Bezier curve.
-// chi = signed crossing count of the +x ray from p through this curve only.
+// Fractional contribution of one curve given its +x ray crossing count chi.
 //
-// The two endpoint angles split the circle into an "inner" arc (CCW from
-// theta_A to theta_B, span = delta) and an "outer" arc (complement).
-// Chi tells us which arc the +x direction falls in:
-//   theta_A < theta_B → +x is in the outer arc → chi_outer = chi
-//   theta_A > theta_B → +x is in the inner arc → chi_inner = chi
-// wn = chi_outer * outer_frac + chi_inner * inner_frac
-//    = chi_outer + inner_frac       (since chi_inner = chi_outer + 1)
+// The two endpoint angles split the circle into an inner arc (CCW from
+// theta_A to theta_B, span = delta) and an outer arc (the rest). The +x
+// direction lies in the inner arc iff theta_A > theta_B, so chi gives us
+// chi_inner or chi_outer accordingly. Adjacent arcs differ by exactly 1,
+// so the total is chi_outer + inner_frac.
 double curve_contribution(const BezierCurve& curve,
                           const Eigen::Vector2d& p,
                           int chi)
@@ -32,8 +29,9 @@ double curve_contribution(const BezierCurve& curve,
     Eigen::Vector2d r0 = curve.P[0] - p;
     Eigen::Vector2d r3 = curve.P[3] - p;
 
+    // Endpoint sits on p: the curve covers the full circle, return chi as-is.
     if (r0.squaredNorm() < 1e-14 || r3.squaredNorm() < 1e-14)
-        return static_cast<double>(chi); // degenerate: full-circle contribution
+        return static_cast<double>(chi);
 
     double theta_A = norm_angle(std::atan2(r0.y(), r0.x()));
     double theta_B = norm_angle(std::atan2(r3.y(), r3.x()));
@@ -41,7 +39,6 @@ double curve_contribution(const BezierCurve& curve,
     double delta = theta_B - theta_A;
     if (delta <= 0.0) delta += TWO_PI;
 
-    // Degenerate: both endpoints at essentially the same angle
     if (delta < 1e-10 || TWO_PI - delta < 1e-10)
         return static_cast<double>(chi);
 
@@ -73,9 +70,8 @@ double winding_number(const std::vector<BezierCurve>& curves,
     return wn;
 }
 
-// Grid evaluation: for each row, shoot one ray per curve and build a per-curve
-// suffix-sum of chi.  Each query point does O(K log H) lookups (K curves,
-// H hits per row) plus K calls to curve_contribution — no per-point ray shooting.
+// One ray per curve per row; chi at any (x, y) is a suffix-sum lookup over the
+// hits to the right of x. This trades resolution^2 rays for resolution * K rays.
 Eigen::MatrixXd winding_number_grid(
     const std::vector<BezierCurve>& curves,
     double x_min, double x_max,
@@ -92,7 +88,6 @@ Eigen::MatrixXd winding_number_grid(
 
     struct Hit { double x; int sign; };
 
-    // Per-curve storage reused across rows
     int K = static_cast<int>(curves.size());
     std::vector<std::vector<Hit>> row_hits(K);
     std::vector<std::vector<int>> chi_suffix(K);
@@ -100,15 +95,12 @@ Eigen::MatrixXd winding_number_grid(
     for (int row = 0; row < resolution; ++row) {
         double y = y_min + row * dy;
 
-        // Shoot one ray per curve for this row
         for (int k = 0; k < K; ++k) {
             auto isects = ray_bezier_intersect(curves[k], y, -1e300, tol);
             auto& hk = row_hits[k];
             hk.clear();
             for (auto& h : isects) hk.push_back({h.x, h.sign});
-            // isects are already sorted by x
 
-            // Build suffix-sum: chi_suffix[k][j] = sum of signs for hits[j..n-1]
             int n = static_cast<int>(hk.size());
             chi_suffix[k].assign(n + 1, 0);
             for (int j = n - 1; j >= 0; --j)
@@ -121,7 +113,6 @@ Eigen::MatrixXd winding_number_grid(
 
             double wn = 0.0;
             for (int k = 0; k < K; ++k) {
-                // Binary search: first hit strictly to the right of x
                 const auto& hk = row_hits[k];
                 int j = static_cast<int>(
                     std::upper_bound(hk.begin(), hk.end(), x,

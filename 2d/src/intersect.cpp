@@ -7,9 +7,9 @@ namespace wn2d {
 
 namespace {
 
-// Clip [0,1] using the convex hull of {(u[i], d[i])} against d=0.
-// u values are fixed: 0, 1/3, 2/3, 1.
-// Returns false if no crossing; otherwise sets lo,hi.
+// Bezier clip step in 1D: returns the [lo, hi] subinterval of [0, 1] that
+// could still contain a root of d, derived from the convex hull of the
+// four control values at u = 0, 1/3, 2/3, 1.
 bool bezier_clip_1d(const double d[4], double& lo, double& hi)
 {
     static const double u[4] = {0.0, 1.0/3.0, 2.0/3.0, 1.0};
@@ -58,7 +58,8 @@ std::vector<RayIntersection> ray_bezier_intersect(
     stack.reserve(64);
     stack.push_back({curve, 0.0, 1.0, 0});
 
-    // sqrt(tol) threshold: convergence fires before rounding pushes d[0]→negative
+    // Tighter than tol: rounding near the root can drive d slightly negative
+    // and a plain tol check would then reject a valid converged segment.
     const double tol_sqrt = std::sqrt(tol);
 
     while (!stack.empty()) {
@@ -72,10 +73,8 @@ std::vector<RayIntersection> ray_bezier_intersect(
                                      std::abs(d[2]),std::abs(d[3])});
         double t_span    = t_hi - t_lo;
 
-        // Convergence check BEFORE sign-consistency reject: when max_abs_d is small
-        // (below sqrt(tol)) the clipping can push the interval just past the root,
-        // producing an all-negative segment that would be incorrectly rejected.
-        // ALWAYS use the ORIGINAL curve for evaluation — clipped segments are degenerate.
+        // Always evaluate the ORIGINAL curve at the midpoint; the clipped
+        // segment loses precision near the root.
         if (max_abs_d < tol_sqrt || t_span < tol || depth >= max_depth) {
             double t_mid = 0.5 * (t_lo + t_hi);
             Eigen::Vector2d pos  = curve.eval(t_mid);
@@ -86,7 +85,6 @@ std::vector<RayIntersection> ray_bezier_intersect(
             continue;
         }
 
-        // Quick sign-consistency reject (only after convergence is ruled out)
         {
             bool all_pos = d[0]>0&&d[1]>0&&d[2]>0&&d[3]>0;
             bool all_neg = d[0]<0&&d[1]<0&&d[2]<0&&d[3]<0;
@@ -99,15 +97,14 @@ std::vector<RayIntersection> ray_bezier_intersect(
 
         double new_span = u_hi - u_lo;
 
-        // If new_span is negligible, converge immediately
         if (new_span < 1e-10) {
-            // Skip right-endpoint roots: the adjacent right interval will record them
-            // when they appear as u=0 at its left end, preventing double-counting.
+            // Skip a root sitting on u = 1: the next segment will pick it up
+            // at its u = 0 and we'd double-count otherwise.
             if (u_hi >= 1.0 - 1e-10) continue;
             double t_hit = t_lo + 0.5*(u_lo + u_hi) * t_span;
             Eigen::Vector2d pos  = curve.eval(t_hit);
-            // Guard against spurious hits where a control point has d=0 but the
-            // actual curve doesn't cross y=y0 (clipping snaps lo=hi to the cp index).
+            // Guard against a control point happening to sit on y = y0 without
+            // the curve actually crossing there.
             if (std::abs(pos.y() - y0) > tol_sqrt) continue;
             Eigen::Vector2d tang = curve.tangent(t_hit);
             if (pos.x() >= x_origin && std::abs(tang.y()) > 1e-14) {
@@ -116,14 +113,13 @@ std::vector<RayIntersection> ray_bezier_intersect(
             continue;
         }
 
-        // If clipping removed < 20% or past half max_depth → bisect
+        // Slow progress: fall back to bisection.
         if (new_span > 0.8 || depth >= max_depth / 2) {
             auto [left, right] = seg.split(0.5);
             double t_mid_g = t_lo + 0.5 * t_span;
             stack.push_back({right, t_mid_g, t_hi,   depth+1});
             stack.push_back({left,  t_lo,    t_mid_g, depth+1});
         } else {
-            // Reparametrise to [u_lo, u_hi]
             BezierCurve clipped;
             if (u_lo > 1e-10) {
                 auto [lft, rgt] = seg.split(u_lo);
@@ -140,10 +136,10 @@ std::vector<RayIntersection> ray_bezier_intersect(
         }
     }
 
-    // Sort by x, then merge duplicates within tol
     std::sort(results.begin(), results.end(),
               [](const RayIntersection& a, const RayIntersection& b){ return a.x < b.x; });
 
+    // Merge near-duplicate hits and drop any whose signs cancel.
     std::vector<RayIntersection> unique;
     unique.reserve(results.size());
     for (auto& r : results) {
