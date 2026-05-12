@@ -20,11 +20,11 @@ This repository hosts a reference implementation of both the 3D and 2D code.
 ```
 
 # 2D code
-## How does it work? 
+## How does it work?
 
 The 2D one-shot formula: the two endpoints of each curve project onto the unit
 circle around **p**, splitting it into two arcs whose `chi` differ by
-exactly 1. A single ray interesection is needed to obtain both values. The GWN is obtained by weighing these chis with each region's arc length. 
+exactly 1. A single ray interesection is needed to obtain both values. The GWN is obtained by weighing these chis with each region's arc length.
 subdivision. For dense grid queries, rays are reused row-by-row, meaning that less than a ray intersection is required on average!
 
 ## Build
@@ -77,6 +77,62 @@ The full API is in `2d/include/wn2d/winding_number.h`.
 
 # 3D code
 
-I am in the process of improving the code quality and adding examples. 
+## Build
 
-Email me at firstname.lastname@umontreal.ca for expedited assistance. 
+3D dependencies: libigl (submodule), GSL, CGAL (pulled via
+libigl), Boost (for Gauss-Kronrod quadrature), and OpenMP (recommended).
+
+```bash
+git submodule update --init --recursive
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
+
+This produces a static library `gwn3d`, the CLI `one_shot_wn_3d`, and the
+example/test binaries.
+
+## Running the CLI
+
+```bash
+./build/3d/one_shot_wn_3d -n camel \
+    -m inputs/camelhead.obj \
+    -q inputs/camelhead_500_300.points \
+    -r 500x300
+```
+
+The CLI writes `<name>.ppm` next to the working directory, with GWN values
+mapped from `[-1, 1]` to a red-to-green gradient through black (negative red,
+zero black, positive green).
+
+## Running the examples and tests
+
+```bash
+./build/3d/examples/mesh_demo
+./build/3d/examples/parametric_demo
+./build/3d/examples/bezier_patch_demo
+ctest --test-dir build/3d --output-on-failure
+```
+
+## Using it from C++
+
+```cpp
+#include <gwn3d/gwn.h>
+#include <gwn3d/mesh_surface.h>
+#include "curve_net_parser.h"
+
+auto surface = gwn3d::MeshSurface::from_file("model.obj");
+Eigen::MatrixXd qp = load_query_points("queries.points");
+auto rays = dimension_to_rays({ 500, 300 });
+
+gwn3d::GwnOptions opts;
+opts.resolution = { 500, 300 };
+auto result = gwn3d::compute_gwn(surface, qp, rays, opts);
+gwn3d::write_gwn_ppm(result, "out.ppm");
+```
+
+## Linking from CMake
+
+```cmake
+add_subdirectory(path/to/one_shot_wn/3d)
+target_link_libraries(my_app PRIVATE gwn3d)
+```

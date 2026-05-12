@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 #include "math_util.h"
 #include "curve_net_parser.h"
 
@@ -307,16 +308,15 @@ curve_net_sampler run_region_splitting(const std::vector<patch_t>& closed_patche
 }
 region_weighted_rays_info get_weighted_rays(const closed_curve_t& curve, const Eigen::Vector3d& point)
 {
-    surface_config config;
-    return get_weighted_rays_with_config(curve, point, config);
+    return get_weighted_rays(curve, point, true);
 }
-region_weighted_rays_info get_weighted_rays_with_config(const closed_curve_t& curve, const Eigen::Vector3d& point, const surface_config& config)
+region_weighted_rays_info get_weighted_rays(const closed_curve_t& curve, const Eigen::Vector3d& point, bool perform_self_intersections)
 {
     closed_spherical_curve_t spherical_curve = project_to_sphere(curve, point);
 
     region_splitting_info region_info;
 
-    if (config.perform_self_intersections)
+    if (perform_self_intersections)
     {
         region_info = compute_regions_for_curve(spherical_curve);
     }

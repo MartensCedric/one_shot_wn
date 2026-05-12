@@ -4,49 +4,7 @@
 #include <Eigen/Dense>
 #include <string>
 #include "patch.h"
-#include "parametric.h"
 #include "boundary_processing.h"
-#include "coons.h"
-
-struct surface_config {
-	SurfaceType surface_type = SurfaceType::MINIMAL;
-	implicit_func_t parametric_func;
-	std::function<Eigen::Matrix<double, 3, 2>(Eigen::Vector2d)> parametric_jac;
-	bool use_fd = true;
-	std::vector<coons_patch> coons_patches;
-	std::string coons_folder_name;
-	int num_coons_files = 0;
-
-	double parametric_max_t = 5.0;
-	std::string mesh_name;
-	Eigen::MatrixXd mesh_vertices;
-	Eigen::MatrixXi mesh_faces;
-	std::vector<bool> coons_flip_normals;
-	std::vector<bool> flip_patch_orientation;
-	bool do_symmetric_patch_adjustment = false;
-	bool do_jiggle_rays = false;
-	bool alec_only = false;
-	bool use_obj_folder = false;
-	bool patch_from_uv_triangle = false;
-	int num_patch_points_from_uv = 0;
-	std::string override_output_name;
-	bool is_override_output_name = false;
-	std::vector<space_curve_t> boundaries;
-	bool perform_self_intersections = true;
-	bool run_fractional_only = false;
-	std::function<bool(Eigen::Vector2d)> is_in_parametric_domain = [](Eigen::Vector2d uv) { return uv(0) >= 0 && uv(0) <= 1 && uv(1) >= 0 && uv(1) <= 1; };
-};
-
-struct curvenet_input {
-	std::string input_name;
-	std::string patches_name;
-	std::string query_point_file;
-	std::vector<int> dimensions;
-	std::vector<int> patches_to_remove;
-	struct surface_config config;
-	std::vector<std::vector<int>> predefined_mesh_boundary;
-};
-
 
 Eigen::MatrixXd remove_consecutive_duplicates(const Eigen::MatrixXd& curve);
 std::vector<patch_t> load_all_patches(const std::string& patch_file);

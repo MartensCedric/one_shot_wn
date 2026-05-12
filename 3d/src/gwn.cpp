@@ -121,33 +121,3 @@ std::vector<double> gwn_from_meshes(const std::vector<Eigen::MatrixXd>& Vs, cons
 	return gwn;
 }
 
-void write_fem_gwn_to_file(const std::vector<double>& gwn, const gwn_timing_info& timing_info, const curvenet_input& input)
-{
-	std::string outname = input.config.is_override_output_name ? input.config.override_output_name : input.input_name;
-	std::string filename = "outputs/" + outname + "_alec.m";
-	std::ofstream chi_output(filename);
-	chi_output << "chis = [";
-	for (int j = 0; j < gwn.size(); j++)
-	{
-		chi_output << std::setprecision(16) << gwn[j] << ",";
-	}
-
-	chi_output << "];\n";
-	chi_output << "res = [";
-
-	for (int j = input.dimensions.size() - 1; j >= 0; j--)
-	{
-		chi_output << std::to_string(input.dimensions[j]) << ",";
-	}
-
-	chi_output << "];\n";
-
-	chi_output << "num_patches = " << std::to_string(timing_info.num_patches) << ";" << std::endl;
-	chi_output << "total_faces = " << std::to_string(timing_info.total_faces) << ";" << std::endl;
-	chi_output << "total_meshing_time = " << std::to_string(timing_info.total_meshing_time.count()) << ";" << std::endl;
-	chi_output << "total_triangulation_time = " << std::to_string(timing_info.total_triangulation_time.count()) << ";" << std::endl;
-	chi_output << "winding_number_result_time = " << std::to_string(timing_info.winding_number_result_time.count()) << ";" << std::endl;
-	
-
-	chi_output.close();
-}
