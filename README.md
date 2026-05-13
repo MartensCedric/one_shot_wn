@@ -91,43 +91,17 @@ cmake --build build
 This produces a static library `gwn3d`, the CLI `one_shot_wn_3d`, and the
 example/test binaries.
 
-## Running the CLI
-
-```bash
-./build/3d/one_shot_wn_3d -n camel \
-    -m inputs/camelhead.obj \
-    -q inputs/camelhead_500_300.points \
-    -r 500x300
-```
-
-The CLI writes `<name>.ppm` next to the working directory, with GWN values
-mapped from `[-1, 1]` to a red-to-green gradient through black (negative red,
-zero black, positive green).
-
 ## Running the examples and tests
 
 ```bash
 ./build/3d/examples/mesh_demo
 ./build/3d/examples/parametric_demo
+./build/3d/examples/minimal_surface_demo
+./build/3d/examples/coons_demo
 ./build/3d/examples/bezier_patch_demo
-ctest --test-dir build/3d --output-on-failure
-```
-
-## Using it from C++
-
-```cpp
-#include <gwn3d/gwn.h>
-#include <gwn3d/mesh_surface.h>
-#include "curve_net_parser.h"
-
-auto surface = gwn3d::MeshSurface::from_file("model.obj");
-Eigen::MatrixXd qp = load_query_points("queries.points");
-auto rays = dimension_to_rays({ 500, 300 });
-
-gwn3d::GwnOptions opts;
-opts.resolution = { 500, 300 };
-auto result = gwn3d::compute_gwn(surface, qp, rays, opts);
-gwn3d::write_gwn_ppm(result, "out.ppm");
+./build/3d/examples/point_query_demo
+./build/3d/examples/compare_with_libigl
+./build/3d/tests/gwn3d_tests
 ```
 
 ## Linking from CMake

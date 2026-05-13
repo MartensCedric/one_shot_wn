@@ -1,39 +1,16 @@
 #include "curve_net_wn.h"
 #include <iostream>
-#include <iomanip>
-#include <fstream>
 #include <chrono>
-#include <atomic>
 #include <Eigen/Dense>
 
-#include <igl/barycenter.h>
-
-
-#include <boost/math/quadrature/gauss_kronrod.hpp>
 #include "adaptive.h"
 
-#define WORKERS_TO_USE_SHUFFLED 18
-#define WORKERS_TO_USE_UNSHUFFLED 40
-
-space_curve_t dirichlet_at_inf(const space_curve_t& patch, double scale)
-{
-	space_curve_t values_at_inf = patch;
-	Eigen::Vector3d means = space_curve_means(patch);
-	for (int i = 0; i < values_at_inf.rows(); i++)
-		values_at_inf.row(i) -= means;
-	values_at_inf *= scale;
-	for (int i = 0; i < values_at_inf.rows(); i++)
-		values_at_inf.row(i) += means;
-	return values_at_inf;
-}
-
-precomputed_curve_data precompute_patches(const std::vector<space_curve_t>& patches, const std::vector<double>& insidenesses)
+precomputed_curve_data precompute_patches(const std::vector<space_curve_t>& patches, const std::vector<double>& insidenesses, int n_threads)
 {
 	precomputed_curve_data precompute;
 	std::cout << patches.size() << " patches" << std::endl;
 
 	std::cout << "Preprocessing..." << std::endl;
-	constexpr int max_threads = 18;
 
 	precompute.bounding_boxes.resize(patches.size());
 	precompute.df_dns.resize(patches.size());
@@ -43,7 +20,7 @@ precomputed_curve_data precompute_patches(const std::vector<space_curve_t>& patc
 	precompute.precompute_total_time = std::chrono::nanoseconds::zero();
 	std::chrono::high_resolution_clock::time_point precompute_tic = std::chrono::high_resolution_clock::now();
 
-#pragma omp parallel for num_threads(max_threads)
+#pragma omp parallel for num_threads(n_threads)
 	for (int i = 0; i < patches.size(); i++)
 	{
 		std::chrono::high_resolution_clock::time_point precompute_start = std::chrono::high_resolution_clock::now();

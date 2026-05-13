@@ -53,13 +53,39 @@ struct GwnResult {
     std::array<int, 2> resolution{};
 };
 
-/// Evaluate GWN at query_points. rays is the row-decomposition: each inner
-/// vector is a list of indices into query_points, in order along one ray.
-/// surface must outlive this call.
+/// Three ways to query the GWN field. Pick the overload that matches your
+/// layout; all three call the same underlying machinery.
+
+/// 1) Single 3D query point. Returns the GWN scalar at that point.
+double compute_gwn(
+    Surface& surface,
+    const Eigen::Vector3d& point,
+    const GwnOptions& opts = {});
+
+/// 2) Arbitrary query points grouped along rays for batched ray-shooting.
+/// `rays` is the row decomposition: each inner vector is a list of indices
+/// into `query_points`, in order along one ray. Every ray must have at
+/// least two points so the ray direction can be derived. `surface` must
+/// outlive this call.
 GwnResult compute_gwn(
     Surface& surface,
     const Eigen::MatrixXd& query_points,
     const std::vector<std::vector<int>>& rays,
+    const GwnOptions& opts = {});
+
+/// 3) Axis-aligned 2D grid in 3D space, between two corner points. The
+/// grid plane is perpendicular to whichever coordinate axis has the
+/// smallest |p1 - p0| (pinned to the midpoint of that axis, or the common
+/// value if p0 and p1 share it). `width` and `height` are resolutions
+/// along the first and second remaining axes in (x, y, z) order. Rays
+/// sweep the longer of `width` / `height` for batching. The returned
+/// `GwnResult::resolution` is set to `{width, height}` so the result can
+/// be handed directly to `write_gwn_ppm`.
+GwnResult compute_gwn(
+    Surface& surface,
+    const Eigen::Vector3d& p0,
+    const Eigen::Vector3d& p1,
+    int width, int height,
     const GwnOptions& opts = {});
 
 /// Write the GWN field as a binary P6 PPM. Values are clamped to [-1, 1] and

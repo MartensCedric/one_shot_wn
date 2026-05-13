@@ -1,4 +1,5 @@
-// ParametricSurface demo: a paraboloid bowl evaluated on a 2D slice in 3D space.
+// ParametricSurface demo: a paraboloid bowl evaluated on a 2D slice in 3D
+// space using the grid overload of compute_gwn.
 
 #include <cmath>
 #include <iostream>
@@ -6,7 +7,6 @@
 
 #include "gwn3d/gwn.h"
 #include "gwn3d/parametric_surface.h"
-#include "curve_net_parser.h"
 
 static Eigen::Vector3d paraboloid(Eigen::Vector2d uv) {
     double x = 2.0 * uv(0) - 1.0;
@@ -31,23 +31,13 @@ static std::vector<patch_t> paraboloid_boundary(int n_per_edge) {
 }
 
 int main() {
-    const int W = 120, H = 80;
     gwn3d::ParametricSurface surface(paraboloid, paraboloid_boundary(64));
 
-    Eigen::MatrixXd qp(W * H, 3);
-    for (int j = 0; j < H; ++j) {
-        for (int i = 0; i < W; ++i) {
-            double x = -1.5 + 3.0 * i / (W - 1);
-            double y = -1.5 + 3.0 * j / (H - 1);
-            qp.row(j * W + i) << x, y, 1.0;
-        }
-    }
+    // Render a 2D slice at z = 1 (just above the paraboloid's apex).
+    Eigen::Vector3d p0(-1.5, -1.5, 1.0);
+    Eigen::Vector3d p1( 1.5,  1.5, 1.0);
 
-    gwn3d::GwnOptions opts;
-    opts.resolution = { W, H };
-    auto rays = dimension_to_rays({ W, H });
-
-    auto res = gwn3d::compute_gwn(surface, qp, rays, opts);
+    auto res = gwn3d::compute_gwn(surface, p0, p1, 120, 80);
     gwn3d::write_gwn_ppm(res, "paraboloid.ppm");
     std::cout << "wrote paraboloid.ppm\n";
     return 0;

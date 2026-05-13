@@ -23,8 +23,7 @@ struct precomputed_curve_data {
 	std::chrono::nanoseconds precompute_total_time;
 };
 
-space_curve_t dirichlet_at_inf(const space_curve_t& patch, double scale);
-precomputed_curve_data precompute_patches(const std::vector<space_curve_t>& patches, const std::vector<double>& insidenesses);
+precomputed_curve_data precompute_patches(const std::vector<space_curve_t>& patches, const std::vector<double>& insidenesses, int n_threads);
 void free_precompute(precomputed_curve_data& precomputed_data);
 all_intersections_with_normals_result find_all_intersections_bem(const box& bounding_box, const struct bem_solver_params& bem_solver_params, gsl_multiroot_fsolver* solver, double max_ray_length);
 std::vector<double> winding_numbers_along_ray(const std::vector<std::pair<double, int>>& intersections, const std::vector<region_weighted_rays_info>& region_infos, const std::vector<int>& ray, const Eigen::MatrixXd& query_points);

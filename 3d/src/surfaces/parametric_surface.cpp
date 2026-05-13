@@ -1,25 +1,11 @@
 #include "gwn3d/parametric_surface.h"
 
-#include <gsl/gsl_multiroots.h>
+#include "gsl_solver_pool.h"
 
 namespace gwn3d {
 
-struct ParametricSurface::ThreadCache {
-    gsl_multiroot_fsolver* solver = nullptr;
-    gsl_multiroot_function F{};
-
-    ThreadCache() {
-        const gsl_multiroot_fsolver_type* T = gsl_multiroot_fsolver_hybrids;
-        F.f = &f_func_parametric;
-        F.n = 3;
-        solver = gsl_multiroot_fsolver_alloc(T, F.n);
-        solver->x = gsl_vector_alloc(F.n);
-        solver->function = &F;
-    }
-
-    ~ThreadCache() {
-        if (solver) gsl_multiroot_fsolver_free(solver);  // also frees s->x
-    }
+struct ParametricSurface::ThreadCache : GslHybridsSolver3 {
+    ThreadCache() : GslHybridsSolver3(&f_func_parametric) {}
 };
 
 ParametricSurface::ParametricSurface(

@@ -1,27 +1,13 @@
 #include "gwn3d/minimal_surface.h"
 
-#include <gsl/gsl_multiroots.h>
-
 #include "bem_solver.h"
 #include "curve_net_parser.h"
+#include "gsl_solver_pool.h"
 
 namespace gwn3d {
 
-struct MinimalSurface::ThreadCache {
-    gsl_multiroot_fsolver* solver = nullptr;
-    gsl_multiroot_function F{};
-
-    ThreadCache() {
-        const gsl_multiroot_fsolver_type* T = gsl_multiroot_fsolver_hybrids;
-        F.f = &f_func;
-        F.n = 3;
-        solver = gsl_multiroot_fsolver_alloc(T, F.n);
-        solver->x = gsl_vector_alloc(F.n);
-        solver->function = &F;
-    }
-    ~ThreadCache() {
-        if (solver) gsl_multiroot_fsolver_free(solver);
-    }
+struct MinimalSurface::ThreadCache : GslHybridsSolver3 {
+    ThreadCache() : GslHybridsSolver3(&f_func) {}
 };
 
 MinimalSurface::MinimalSurface(std::vector<patch_t> boundary_patches)
@@ -39,7 +25,7 @@ void MinimalSurface::prepare(int n_threads) {
         for (const auto& p : closed) closed_curves.push_back(p.curve);
 
         std::vector<double> insideness(closed_curves.size(), 1.0);
-        precompute_ = precompute_patches(closed_curves, insideness);
+        precompute_ = precompute_patches(closed_curves, insideness, n_threads);
         prepared_ = true;
     }
 

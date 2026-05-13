@@ -278,6 +278,83 @@ GwnResult compute_gwn(
     return result;
 }
 
+double compute_gwn(
+    Surface& surface,
+    const Eigen::Vector3d& point,
+    const GwnOptions& opts)
+{
+    // The rays-overload requires at least two points per ray to derive a
+    // direction. Synthesize a tiny +x companion so the batching path applies.
+    Eigen::MatrixXd qp(2, 3);
+    qp.row(0) = point;
+    qp.row(1) = point + Eigen::Vector3d(1e-3, 0.0, 0.0);
+    const std::vector<std::vector<int>> rays = { { 0, 1 } };
+    return compute_gwn(surface, qp, rays, opts).gwn[0];
+}
+
+GwnResult compute_gwn(
+    Surface& surface,
+    const Eigen::Vector3d& p0,
+    const Eigen::Vector3d& p1,
+    int width, int height,
+    const GwnOptions& opts)
+{
+    if (width <= 0 || height <= 0)
+        throw std::runtime_error("compute_gwn: width and height must be positive");
+
+    Eigen::Vector3d diff = p1 - p0;
+    const int normal_axis = [&]() {
+        int n = 0;
+        double smallest = std::abs(diff(0));
+        for (int i = 1; i < 3; ++i) {
+            if (std::abs(diff(i)) < smallest) { smallest = std::abs(diff(i)); n = i; }
+        }
+        return n;
+    }();
+    int a = (normal_axis + 1) % 3;
+    int b = (normal_axis + 2) % 3;
+    if (a > b) std::swap(a, b); // keep world ordering: a is the first remaining axis
+
+    const double normal_value = 0.5 * (p0(normal_axis) + p1(normal_axis));
+
+    // Map width -> axis a, height -> axis b. Rays sweep whichever has more
+    // cells so write_gwn_ppm's layout (slow * n_fast + fast) is honored.
+    const int n_a = width;
+    const int n_b = height;
+    const int n_slow = std::max(n_a, n_b);
+    const int n_fast = std::min(n_a, n_b);
+    const bool a_is_slow = (n_a >= n_b);
+    const int slow_axis = a_is_slow ? a : b;
+    const int fast_axis = a_is_slow ? b : a;
+    const double slow_lo = p0(slow_axis);
+    const double slow_hi = p1(slow_axis);
+    const double fast_lo = p0(fast_axis);
+    const double fast_hi = p1(fast_axis);
+
+    Eigen::MatrixXd qp(n_slow * n_fast, 3);
+    for (int slow = 0; slow < n_slow; ++slow) {
+        double s = (n_slow == 1) ? 0.5 : double(slow) / double(n_slow - 1);
+        double slow_coord = slow_lo + s * (slow_hi - slow_lo);
+        for (int fast = 0; fast < n_fast; ++fast) {
+            double f = (n_fast == 1) ? 0.5 : double(fast) / double(n_fast - 1);
+            double fast_coord = fast_lo + f * (fast_hi - fast_lo);
+            Eigen::Vector3d row;
+            row(normal_axis) = normal_value;
+            row(slow_axis)   = slow_coord;
+            row(fast_axis)   = fast_coord;
+            qp.row(slow * n_fast + fast) = row;
+        }
+    }
+    // slice_to_rays(n_fast, n_slow, 0) yields n_fast rays of length n_slow,
+    // with ray i indexing [i, i + n_fast, i + 2*n_fast, ...]. That walks
+    // qp's slow axis, which is exactly what the ray-batching expects.
+    std::vector<std::vector<int>> rays = slice_to_rays(n_fast, n_slow, 0);
+
+    GwnOptions o = opts;
+    o.resolution = { width, height };
+    return compute_gwn(surface, qp, rays, o);
+}
+
 void write_gwn_ppm(const GwnResult& result, const std::string& filename) {
     // dimension_to_rays makes the larger element of opts.resolution the ray
     // length (slow axis in memory) and the smaller one the ray count (fast
