@@ -20,12 +20,8 @@ This repository hosts a reference implementation of both the 3D and 2D code.
 ```
 
 # 2D code
-## How does it work?
 
-The 2D one-shot formula: the two endpoints of each curve project onto the unit
-circle around **p**, splitting it into two arcs whose `chi` differ by
-exactly 1. A single ray interesection is needed to obtain both values. The GWN is obtained by weighing these chis with each region's arc length.
-subdivision. For dense grid queries, rays are reused row-by-row, meaning that less than a ray intersection is required on average!
+[Informal Blog Post](https://cedricmartens.com/blog/one_shot_2d_gwn/)
 
 ## Build
 
